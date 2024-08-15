@@ -9,6 +9,7 @@ import { s3Storage } from '@payloadcms/storage-s3'
 
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
+import { supabase } from '@/lib/initSupabase'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
