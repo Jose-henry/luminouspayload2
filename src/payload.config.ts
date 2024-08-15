@@ -10,6 +10,7 @@ import { s3Storage } from '@payloadcms/storage-s3'
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
 import { supabase } from '@/lib/initSupabase'
+import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -33,25 +34,14 @@ export default buildConfig({
     },
   }),
   sharp,
-  plugins: [s3Storage({ 
-    collections: { 
-      [Media.slug]: true,
-      'media': {
-        prefix: 'media',
-        //disablePayloadAccessControl: true,
-      },
-    },
-    bucket: process.env.S3_BUCKET || '',
-    config: {
-      credentials: {
-        accessKeyId: process.env.S3_ACCESS_KEY_ID || '',
-        secretAccessKey: process.env.S3_SECRET_KEY || '',
-      },
-      region: process.env.S3_REGION || '',
-      endpoint: process.env.S3_ENDPOINT || '',
-      forcePathStyle: true,
-      // ... Other S3 configuration options
-    },
-   }),
-  ],
+  plugins: process.env.BLOB_READ_WRITE_TOKEN
+  ? [
+      vercelBlobStorage({
+        collections: {
+          [Media.slug]: true,
+        },
+        token: process.env.BLOB_READ_WRITE_TOKEN || '',
+      }),
+    ]
+  :  [],
 })
